@@ -5,6 +5,6 @@ import express from "express";
 const router = express.Router();
 
 router.post("/generate-variation", upload.single("image"), controllers.generateVariation);
-router.post('/edit-image', upload.single('image'), controllers.editImage);
+router.post('/edit-image', upload.array('image'), controllers.editImage);
 
 export default router;
