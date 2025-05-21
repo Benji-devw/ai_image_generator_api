@@ -112,6 +112,8 @@ const editGptImage = async (req, res) => {
 };
 
 const editDallE3 = async (req, res) => {
+  const { prompt, model, n, size } = req.body;
+  
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({
@@ -119,7 +121,6 @@ const editDallE3 = async (req, res) => {
       });
     }
 
-    const { prompt, model = 'dall-e-3', n = 1, size = '1024x1024' } = req.body;
 
     if (!prompt) {
       return res.status(400).json({
