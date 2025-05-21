@@ -62,40 +62,6 @@ POST /api/ai/edit-image
 }
 ```
 
-**En cas d'erreur** :
-```json
-{
-  "error": "Message d'erreur détaillé"
-}
-```
-
-### - Édition d'image
-
-```javascript
-{
-  model: "dall-e-2",  // Modèle à utiliser (requis)
-  image: <File>,      // Fichier image source (PNG, < 4MB)
-  prompt: "texte",    // Description des modifications (max 1000 caractères)
-  n: 1,              // Nombre de résultats (1-10)
-  size: "1024x1024"   // Taille de sortie (256x256, 512x512, 1024x1024)
-}
-```
-
-**Réponse** :
-
-```json
-{
-  "imageUrl": "data:image/png;base64,..."
-}
-```
-
-**En cas d'erreur** :
-```json
-{
-  "error": "Message d'erreur détaillé"
-}
-```
-
 ### Tarification
 
 | Résolution | Prix               |
@@ -106,13 +72,11 @@ POST /api/ai/edit-image
 
 > 💡 Idéal pour des tests ou des prototypes à faible coût.
 
-### 🟦 1. dall-e-2 (edits + variations)
+### 🟦 1. dall-e-2 (variations)
 
 | Paramètre         | Type      | Obligatoire  | Description                                             |
 | ----------------- | --------- | ------------ | ------------------------------------------------------- |
-| `prompt`          | string    | ✅ Oui       | max 1000 caractères                                     |
 | `image`           | image/png | ✅ Oui       | image carrée, < 4MB                                     |
-| `mask`            | image/png | ❌ Optionnel | doit avoir la même taille que l'image source            |
 | `n`               | int       | ❌ Optionnel | nombre d'images à générer (1-10)                        |
 | `size`            | string    | ❌ Optionnel | `256x256`, `512x512`, `1024x1024` (défaut: `1024x1024`) |
 | `response_format` | string    | ❌ Optionnel | `url` ou `b64_json` (défaut: `url`)                     |
@@ -122,19 +86,17 @@ POST /api/ai/edit-image
 ### - 📦 Endpoints
 
 ```bash
-POST /api/ai/generate
+POST /api/ai/dalle-edit
 ```
 
 ### - Génération d'image
 
-```javascript
+```json
 {
-  model: "dall-e-3",  // Modèle à utiliser (requis)
-  prompt: "texte",    // Description de l'image (max 4000 caractères)
-  n: 1,              // Nombre d'images (1)
-  size: "1024x1024",  // Taille de sortie (1024x1024, 1024x1792, 1792x1024)
-  style: "vivid",     // ou "natural"
-  response_format: "url"
+  "prompt": "Generate a realistic photo of ...",
+  "model": "dall-e-3",
+  "n": 1,
+  "size": "1024x1024"
 }
 ```
 
@@ -142,14 +104,13 @@ POST /api/ai/generate
 
 ```json
 {
-  "imageUrl": "https://.../generated_image.png"
-}
-```
-
-**En cas d'erreur** :
-```json
-{
-  "error": "Message d'erreur détaillé"
+  "success": true,
+  "images": [
+    {
+      "url": "data:image/png;base64,...",
+      "filename": "dalle3_2025-05-21T14-26-59-271Z_0.png"
+    }
+  ]
 }
 ```
 
@@ -177,13 +138,14 @@ POST /api/ai/generate
 ### - 📦 Endpoints
 
 ```bash
-POST /api/ai/generate
+POST /api/ai/edit-image
 ```
 
 ### - Édition avancée
 
 ```javascript
 {
+  model: "gpt-image-1",  // Modèle à utiliser (requis)
   prompt: "texte",    // Description détaillée (max 32 000 caractères)
   image: [<File>],    // Tableau de 1 à 16 images
   mask: <File>,       // Fichier masque (optionnel)
@@ -197,8 +159,7 @@ POST /api/ai/generate
 
 ```json
 {
-  "success": true,
-  "images": ["https://.../edited_image.png"]
+  "imageUrl": "data:image/png;base64,..."
 }
 ```
 
