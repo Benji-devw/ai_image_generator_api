@@ -88,14 +88,31 @@ const editGptImage = async (req, res) => {
     // Nettoyage des fichiers temporaires
     imageFiles.forEach(file => fs.unlinkSync(file.path));
 
-    const base64 = response.data[0].b64_json;
-    const imageUrl = `data:image/png;base64,${base64}`;
+    const results = response.data.map((img, index) => {
+      const base64 = img.b64_json;
+      if (!base64) return null;
 
-    // Save to /uploads
-    const buffer = Buffer.from(base64, "base64");
-    fs.writeFileSync("uploads/edited_image.png", buffer);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `gpt_${timestamp}_${index}.png`;
+      const imageUrl = `data:image/png;base64,${base64}`;
 
-    return res.json({ imageUrl });
+      const buffer = Buffer.from(base64, 'base64');
+      fs.writeFileSync(`uploads/${filename}`, buffer);
+
+      return {
+        url: imageUrl,
+        filename
+      };
+    }).filter(Boolean);
+
+    if (results.length === 0) {
+        throw new Error("Aucune image n'a pu être traitée et sauvegardée.");
+    }
+
+    return res.json({
+      success: true,
+      images: results
+    });
 
   } catch (err) {
     // Nettoyage en cas d’erreur
